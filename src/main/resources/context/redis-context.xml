@@ -1,0 +1,66 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+
+    <bean id="configWrapper" scope="prototype" class="org.datazup.redis.GenericObjectPoolConfigWrapper">
+        <!-- Action to take when trying to acquire a connection and all connections
+            are taken -->
+        <!-- <property name="whenExhaustedAction">
+            Fail-fast behaviour, we don't like to keep the kids waiting
+            <util:constant
+                static-field="org.apache.commons.pool.impl.GenericObjectPool.WHEN_EXHAUSTED_FAIL" />
+            Default behaviour, block the caller until a resource becomes available
+            <util:constant static-field="org.apache.commons.pool.impl.GenericObjectPool.WHEN_EXHAUSTED_BLOCK"
+                />
+        </property> -->
+        <!-- Maximum active connections to Redis instance -->
+        <!-- <property name="maxActive" value="10" /> -->
+        <property name="maxTotal" value="100" />
+        <!-- Number of connections to Redis that just sit there and do nothing -->
+        <property name="maxIdle" value="50" />
+        <!-- Minimum number of idle connections to Redis - these can be seen as
+            always open and ready to serve -->
+        <property name="minIdle" value="10" />
+        <!-- Tests whether connection is dead when connection retrieval method
+            is called -->
+        <!-- <property name="testOnBorrow" value="true" />
+        Tests whether connection is dead when returning a connection to the
+            pool
+        <property name="testOnReturn" value="true" />
+        Tests whether connections are dead during idle periods
+        <property name="testWhileIdle" value="true" />
+        Maximum number of connections to test in each idle check
+        <property name="numTestsPerEvictionRun" value="10" />
+        Idle connection checking period
+        <property name="timeBetweenEvictionRunsMillis" value="60000" /> -->
+        <!-- Maximum time, in milliseconds, to wait for a resource when exausted
+            action is set to WHEN_EXAUSTED_BLOCK -->
+        <!-- <property name="maxWait" value="3000" /> -->
+        <property name="maxWaitMillis" value="3000" />
+
+    </bean>
+
+
+    <bean id="redisConnectionPool" class="redis.clients.jedis.JedisPool" destroy-method="destroy">
+        <constructor-arg index="0">
+            <bean factory-bean="&amp;configWrapper" factory-method="getConfig" />
+        </constructor-arg>
+        <constructor-arg index="1" value="${redis.host}" type="java.lang.String" />
+        <constructor-arg index="2" value="${redis.port}" type="int"  />
+    </bean>
+
+    <bean id="redisClient" class="org.datazup.redis.RedisClient" scope="prototype"
+          destroy-method="destroy">
+        <constructor-arg ref="redisConnectionPool" />
+    </bean>
+    <!--
+    <bean id="stormSignalClientService" class="com.bpu.storm.StormSignalCommandService">
+            <property name="client" ref="stormRedisQueueSignalClient"></property>
+    </bean>
+ -->
+
+
+</beans>
