@@ -2,6 +2,7 @@ package org.datazup.grouper;
 
 import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.exceptions.DimensionKeyException;
+import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.pathextractor.PathExtractor;
 import org.datazup.utils.Tuple;
 
@@ -57,7 +58,7 @@ public class DimensionKey {
             throw new DimensionKeyException("Dimension keys not yet built");
         }
         for (Tuple<String, Object> tuple: tupleList){
-            map.put(tuple.getKey(), tuple.getValue());
+            map.put(GroupUtils.normalizeKey(tuple.getKey()), tuple.getValue());
         }
         return map;
     }

@@ -49,6 +49,9 @@ public class DzupperRedisGrouperTest extends TestBase {
             DimensionKey dimensionKey = new DimensionKey(dimensions, streamMap);
             dimensionKey.build();
             Map<String,Object> currentMap = grouper.upsert(reportName, dimensionKey, metrics);
+            Assert.assertTrue(currentMap.size()==8);
+            Assert.assertTrue(currentMap.containsKey("SUMamount"));
+            Assert.assertTrue(currentMap.containsKey("COUNTamount"));
             System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
         }
     }

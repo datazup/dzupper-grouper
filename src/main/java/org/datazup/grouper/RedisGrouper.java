@@ -3,6 +3,7 @@ package org.datazup.grouper;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.exceptions.NotValidMetric;
+import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.redis.RedisClient;
 import org.datazup.utils.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,11 @@ public class RedisGrouper implements IGrouper{
     public Map<String, Object> upsert(String reportName, DimensionKey dimensionKey, List<String> metrics) {
         List<Tuple<String,Object>> tupleList = dimensionKey.getDimensionValues();
 
+       // Map<GroupKey,Map<String,Number>> groupedByDimensionAsKey = new HashMap<>();
+
         Map<String,Object> report = dimensionKey.getDimensionValuesMap();
         for (String metric: metrics){
-            Tuple<String, MetricType> metricType = parseMetricType(metric);
+            Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
             // increment field in reportName - hash - in Redis
             String fieldKey = getFieldKey(tupleList);
             Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
@@ -48,7 +51,7 @@ public class RedisGrouper implements IGrouper{
                 throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
             }
 
-            report.put(metric, result);
+            report.put(GroupUtils.normalizeKey(metric), result);
         }
 
         return report;
@@ -138,20 +141,7 @@ public class RedisGrouper implements IGrouper{
         return sb.toString();
     }
 
-    private Tuple<String, MetricType> parseMetricType(String metric) {
 
-        String metricName = null;
-        String metricField = null;
-
-        metricName = metric.substring(0, metric.indexOf("("));
-        metricField = metric.substring(metric.indexOf("$")+1);
-        metricField = metricField.substring(0, metricField.indexOf("$"));
-
-        metricField = "$"+metricField+"$";
-
-        Tuple<String, MetricType> tuple = new Tuple<>(metricField, MetricType.valueOf(metricName));
-        return tuple;
-    }
 
     @Override
     public List<Map<String, Object>> getReportList(String reportName, List<String> dimensions, List<String> metrics) {
@@ -186,34 +176,34 @@ public class RedisGrouper implements IGrouper{
                 for (String splitKey: splitted){
                     if (splitKey.contains("^")){ // check metrics
                         String metric = splitKey.substring(1);
-                        Tuple<String, MetricType> metricType = parseMetricType(metric);
+                        Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
                         String metricKeyName = metricType.getValue().toString()+"("+metricType.getKey()+")";
                         if (metrics.contains(metricKeyName)) {
                             processedMetrics.add(metricKeyName);
-                            metricMap.put(metricType.getValue() + normalizeKey(metricType.getKey()), metricKeyValueNumber);
+                            metricMap.put(metricType.getValue() + GroupUtils.normalizeKey(metricType.getKey()), metricKeyValueNumber);
                         }
                     }else if (splitKey.contains("(")){
                         String functionKey =   splitKey.substring(0, splitKey.indexOf("("));
                         String fieldName = splitKey.substring(splitKey.indexOf("$")+1,splitKey.lastIndexOf("$"));
 
                         String fieldValueStr = splitKey.substring(splitKey.lastIndexOf(")")+1);
-                        Object resolvedValue = resolveValue(fieldValueStr);
+                        Object resolvedValue = GroupUtils.resolveValue(fieldValueStr);
 
-                        String fieldKeyName = toFunctionKey(functionKey, fieldName);
+                        String fieldKeyName = GroupUtils.toFunctionKey(functionKey, fieldName);
                         if (dimensions.contains(fieldKeyName)){
                             processedDimensions.add(fieldKeyName);
-                            String normalizedKey = normalizeKey(fieldKeyName);
+                            String normalizedKey = GroupUtils.normalizeKey(fieldKeyName);
                             dimensionMap.put(normalizedKey, resolvedValue);
                         }
 
                     }else {
                         String fieldKey = splitKey.substring(0, splitKey.lastIndexOf("$") + 1);
                         String fieldValue = splitKey.substring(splitKey.lastIndexOf("$") + 1);
-                        Object resolvedValue = resolveValue(fieldValue);
+                        Object resolvedValue = GroupUtils.resolveValue(fieldValue);
 
                         if (dimensions.contains(fieldKey)) {
                             processedDimensions.add(fieldKey);
-                            String normalizedKey = normalizeKey(fieldKey);
+                            String normalizedKey = GroupUtils.normalizeKey(fieldKey);
                             dimensionMap.put(normalizedKey, resolvedValue);
                         }
                     }
@@ -252,9 +242,8 @@ public class RedisGrouper implements IGrouper{
 
     }
 
-    private String toFunctionKey(String function, String fieldName) {
-        return function+"($"+fieldName+"$)";
-    }
+
+/*
 
     @Deprecated
     private List<Map<String,Object>> getSimpleReportList(String reportName){
@@ -274,14 +263,14 @@ public class RedisGrouper implements IGrouper{
                 for (String splitKey: splitted){
                     if (splitKey.contains("^")){
                         String metric = splitKey.substring(1);
-                        Tuple<String, MetricType> metricType = parseMetricType(metric);
-                        record.put(metricType.getValue()+normalizeKey(metricType.getKey()), metricKeyValueNumber);
+                        Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
+                        record.put(metricType.getValue()+GroupUtils.normalizeKey(metricType.getKey()), metricKeyValueNumber);
                     }else if (splitKey.contains("(")){
                         String functionKey =   splitKey.substring(0, splitKey.indexOf("("));
                         String fieldName = splitKey.substring(splitKey.indexOf("$")+1,splitKey.lastIndexOf("$")); //splitKey.substring(splitKey.indexOf("$"));
                         // fieldName = fieldName.substring(0, fieldName.indexOf("$"));
                         String fieldValueStr = splitKey.substring(splitKey.lastIndexOf(")")+1);
-                        Object resolvedValue = resolveValue(fieldValueStr);
+                        Object resolvedValue = GroupUtils.resolveValue(fieldValueStr);
 
                         String fieldKeyName = functionKey+fieldName;
                         record.put(fieldKeyName, resolvedValue);
@@ -289,7 +278,7 @@ public class RedisGrouper implements IGrouper{
                     }else{
                         String fieldKey = splitKey.substring(1, splitKey.lastIndexOf("$"));
                         String fieldValue = splitKey.substring(splitKey.lastIndexOf("$")+1);
-                        Object resolvedValue = resolveValue(fieldValue);
+                        Object resolvedValue = GroupUtils.resolveValue(fieldValue);
                         record.put(fieldKey, resolvedValue);
 
                     }
@@ -304,20 +293,7 @@ public class RedisGrouper implements IGrouper{
         }
 
     }
+*/
 
-    private String normalizeKey(String key) {
-        String normal = key.replaceAll("\\$","").replaceAll("\\(|\\)", "");
-        return normal;
-    }
 
-    private Object resolveValue(String fieldValueStr) {
-        Object resolvedValue = fieldValueStr;
-        try{
-            resolvedValue = NumberUtils.createNumber(fieldValueStr);
-        }catch (Exception e){}
-        if (null==resolvedValue){
-            resolvedValue = fieldValueStr;
-        }
-        return resolvedValue;
-    }
 }
