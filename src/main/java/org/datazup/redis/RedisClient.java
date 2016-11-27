@@ -281,6 +281,19 @@ public class RedisClient  implements Serializable {
         }
     }
 
+    public Double incrementHashFieldByFloatValue(String namespace, String field, double val) throws Exception {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hincrByFloat(namespace, field, val);
+        } catch (Exception e) {
+            jedis.close();
+            throw new Exception(
+                    "Error in hincrBy of namespace: " + namespace + " for field: " + field + " and value: " + val, e);
+        } finally {
+            jedis.close();
+        }
+    }
+
     public Long addToHash(String namespace, String field, String val) throws Exception {
         Jedis jedis = jedisPool.getResource();
         try {

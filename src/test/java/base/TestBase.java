@@ -33,7 +33,8 @@ public abstract class TestBase {
         for (int i = 0;i<10;i++) {
             Map<String,Object> o = new HashMap<>();
             o.put("price", 10*i);
-            o.put("date", DateTime.now().minusDays(i%3));
+            // 27th november 2016
+            o.put("date", (new DateTime("2016-11-27T01:16:29+00:00")).minusDays(i%3));
             o.put("name", "item"+(i%2));
             o.put("type", "type"+(i%2));
             o.put("amount",2*(10-i));
