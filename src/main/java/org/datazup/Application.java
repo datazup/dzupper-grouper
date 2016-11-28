@@ -1,3 +1,4 @@
+/*
 package org.datazup;
 
 import org.datazup.redis.RedisClient;
@@ -9,9 +10,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 
+*/
 /**
  * Created by ninel on 11/25/16.
- */
+ *//*
+
 
 @SpringBootApplication(scanBasePackages = "org.datazup")
 @ImportResource("classpath:context/redis-context.xml")
@@ -43,3 +46,4 @@ public class Application {
 
     }
 }
+*/

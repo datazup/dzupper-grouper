@@ -1,13 +1,13 @@
 package grouper;
 
 import base.TestBase;
-import org.datazup.grouper.GroupKey;
-import org.junit.Assert;
-import org.datazup.Application;
+import org.datazup.ModuleConfiguration;
 import org.datazup.grouper.DimensionKey;
+import org.datazup.grouper.GroupKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.redis.RedisClient;
 import org.datazup.utils.JsonUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by ninel on 11/25/16.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = ModuleConfiguration.class)
 public class DzupperRedisGrouperTest extends TestBase {
 
     @Autowired

@@ -1,6 +1,7 @@
 package org.datazup.grouper;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.datazup.expression.NullObject;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.exceptions.NotValidMetric;
 import org.datazup.grouper.utils.GroupUtils;
@@ -32,17 +33,23 @@ public class RedisGrouper implements IGrouper{
             String fieldKey = getFieldKey(tupleList);
             Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
 
-            if (!(metricValueObject instanceof Number)){
-                throw new NotValidMetric("Invalid metric value: "+metricValueObject+" for metric: "+metricType);
+            if (metricValueObject instanceof NullObject){
+                // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
+                continue;
             }
-            Number metricValue = (Number)metricValueObject;
+
+           /* if (!(metricValueObject instanceof Number)){
+                throw new NotValidMetric("Invalid metric value: "+metricValueObject+" for metric: "+metricType);
+            }*/
+          //  Number metricValue = (Number)metricValueObject;
 
             fieldKey+=("^"+metric);
 
             Number result =  null;
 
+
             try {
-                result = upsert(reportName, fieldKey, metricType.getValue(), metricValue);
+                result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
             } catch (Exception e) {
                 throw new GroupingException("Problem upserting report: "+reportName+" for field: "+fieldKey+" metric: "+metric);
             }
@@ -57,28 +64,34 @@ public class RedisGrouper implements IGrouper{
         return report;
     }
 
-    private Number upsert(String reportName, String fieldKey, MetricType metricType, Number metricValue) throws Exception {
+    private Number upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
         Number result =  null;
-        switch (metricType){
-            case SUM:
-                result = handleSumMetric(reportName, fieldKey, metricValue);
-                break;
-            case COUNT:
-                result = handleCountMetric(reportName, fieldKey, metricValue);
-                break;
-            case AVG:
-                result = handleAvgMetric(reportName, fieldKey, metricValue);
-                break;
-            case MAX:
-                result = handleMaxMetric(reportName, fieldKey, metricValue);
-                break;
-            case MIN:
-                result = handleMinMetric(reportName, fieldKey, metricValue);
-                break;
-            default:
-                throw new NotValidMetric("Invalid metric: "+metricType);
+        if (metricType.equals(MetricType.COUNT)){
+            result = handleCountMetric(reportName, fieldKey);
+        }else {
+            if (!(metricValueObject instanceof Number)){
+                throw new NotValidMetric("Invalid metric value: "+metricValueObject+" for metric: "+metricType);
+            }
+            Number metricValue  = (Number)metricValueObject;
+            switch (metricType) {
+                case SUM:
+                    result = handleSumMetric(reportName, fieldKey, metricValue);
+                    break;
+                case AVG:
+                    result = handleAvgMetric(reportName, fieldKey, metricValue);
+                    break;
+                case MAX:
+                    result = handleMaxMetric(reportName, fieldKey, metricValue);
+                    break;
+                case MIN:
+                    result = handleMinMetric(reportName, fieldKey, metricValue);
+                    break;
+                default:
+                    throw new NotValidMetric("Invalid metric: " + metricType);
+            }
         }
         return result;
+
     }
 
     private Number handleMinMetric(String reportName, String fieldKey, Number metricValue) throws Exception {
@@ -110,7 +123,7 @@ public class RedisGrouper implements IGrouper{
     }
 
     private Number handleAvgMetric(String reportName, String fieldKey, Number metricValue) throws Exception {
-        Number valAvgCount = handleCountMetric(reportName, fieldKey+":count", metricValue);
+        Number valAvgCount = handleCountMetric(reportName, fieldKey+":count");
         Number valAvgSum = handleSumMetric(reportName, fieldKey+":sum", metricValue);
 
         // TODO: this should be refactored such that we'll use LUA script to calculate sum/count/avg/min/max,etc data and reuse
@@ -122,7 +135,7 @@ public class RedisGrouper implements IGrouper{
         return avg;
     }
 
-    private Number handleCountMetric(String reportName, String fieldKey, Number metricValue) throws Exception {
+    private Number handleCountMetric(String reportName, String fieldKey) throws Exception {
         Long d = redisClient.incrementHashFieldByValue(reportName, fieldKey, 1l);
         return d;
     }
