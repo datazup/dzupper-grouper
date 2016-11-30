@@ -47,14 +47,14 @@
         <dependency>
             <groupId>com.github.datazup</groupId>
             <artifactId>path-extractor</artifactId>
-            <version>20c2c5dbc1</version>
+            <version>master</version>
         </dependency>
 
 
         <dependency>
             <groupId>com.github.datazup</groupId>
             <artifactId>dzupper-expression</artifactId>
-            <version>2fd8ff0512</version>
+            <version>master-d25e0c5496-1</version>
         </dependency>
 
         <dependency>
