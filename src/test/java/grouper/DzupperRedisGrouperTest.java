@@ -5,6 +5,7 @@ import org.datazup.ModuleConfiguration;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.GroupKey;
 import org.datazup.grouper.IGrouper;
+import org.datazup.pathextractor.PathExtractor;
 import org.datazup.redis.RedisClient;
 import org.datazup.utils.JsonUtils;
 import org.junit.Assert;
@@ -46,7 +47,8 @@ public class DzupperRedisGrouperTest extends TestBase {
 
     private void processReport(List<Map<String,Object>> records, List<String> dimensions, List<String> metrics){
         for (Map<String,Object> streamMap: records){
-            DimensionKey dimensionKey = new DimensionKey(dimensions, streamMap);
+            PathExtractor pathExtractor = new PathExtractor(streamMap);
+            DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor);
             dimensionKey.build();
             Map<String,Object> currentMap = grouper.upsert(reportName, dimensionKey, metrics);
             Assert.assertTrue(currentMap.size()==8);

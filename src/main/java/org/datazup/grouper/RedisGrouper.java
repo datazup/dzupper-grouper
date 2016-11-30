@@ -27,13 +27,16 @@ public class RedisGrouper implements IGrouper{
        // Map<GroupKey,Map<String,Number>> groupedByDimensionAsKey = new HashMap<>();
 
         Map<String,Object> report = dimensionKey.getDimensionValuesMap();
+        if (null==report || report.size()==0)
+            return null;
+
         for (String metric: metrics){
             Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
             // increment field in reportName - hash - in Redis
             String fieldKey = getFieldKey(tupleList);
             Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
 
-            if (metricValueObject instanceof NullObject){
+            if (metricValueObject instanceof NullObject || null==metricValueObject){
                 // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
                 continue;
             }
