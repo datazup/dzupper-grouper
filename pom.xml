@@ -44,7 +44,7 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.datazup</groupId>
             <artifactId>path-extractor</artifactId>
             <version>master</version>
@@ -56,6 +56,22 @@
             <artifactId>dzupper-expression</artifactId>
             <version>master-d25e0c5496-1</version>
         </dependency>
+-->
+
+        <dependency>
+            <groupId>org.datazup</groupId>
+            <artifactId>path-extractor</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.datazup</groupId>
+            <artifactId>dzupper-expression</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>redis.clients</groupId>
