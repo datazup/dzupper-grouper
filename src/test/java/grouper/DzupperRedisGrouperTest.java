@@ -35,22 +35,30 @@ public class DzupperRedisGrouperTest extends TestBase {
     String reportName = "Company:custom:Report1";
 
     private Map<String,Object> getReportDefinition(){
+    	
+    	 String newDef = "{"
+                 +"\"dimensions\":[{\"name\":\"$name$\", \"type\":\"string\"}, {\"name\":\"$type$\", \"type\":\"string\"},"
+    			 +"{\"name\":\"HOUR($date$)\", \"type\":\"int\"},{\"name\":\"DAY($date$)\", \"type\":\"int\"},{\"name\":\"MONTH($date$)\", \"type\":\"int\"},{\"name\":\"YEAR($date$)\", \"type\":\"int\"}],"
+                
+                 +"\"metrics\":[{\"name\":\"SUM($amount$)\", \"type\":\"int\"},{\"name\":\"COUNT($amount$)\", \"type\":\"int\"}] "
+                 +"}";
+    	 
+//        String def = "{"
+//                +"\"dimensions\":[\"$name$\", \"$type$\", \"HOUR($date$)\", \"DAY($date$)\", \"MONTH($date$)\", \"YEAR($date$)\"], "
+//                +"\"metrics\":[\"SUM($amount$)\", \"COUNT($amount$)\"] "
+//                +"}";
 
-        String def = "{"
-                +"\"dimensions\":[\"$name$\", \"$type$\", \"HOUR($date$)\", \"DAY($date$)\", \"MONTH($date$)\", \"YEAR($date$)\"], "
-                +"\"metrics\":[\"SUM($amount$)\", \"COUNT($amount$)\"] "
-                +"}";
-
-        Map<String,Object> mapDefinition = JsonUtils.getMapFromJson(def);
+        Map<String,Object> mapDefinition = JsonUtils.getMapFromJson(newDef);
         return mapDefinition;
     }
 
-    private void processReport(List<Map<String,Object>> records, List<String> dimensions, List<String> metrics){
+    private void processReport(List<Map<String,Object>> records, List<Map<String,String>> dimensions, List<Map<String,String>> metrics){
         for (Map<String,Object> streamMap: records){
             PathExtractor pathExtractor = new PathExtractor(streamMap);
             DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor);
             dimensionKey.build();
             Map<String,Object> currentMap = grouper.upsert(reportName, dimensionKey, metrics);
+            System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
             Assert.assertTrue(currentMap.size()==8);
             Assert.assertTrue(currentMap.containsKey("SUMamount"));
             Assert.assertTrue(currentMap.containsKey("COUNTamount"));
@@ -66,9 +74,8 @@ public class DzupperRedisGrouperTest extends TestBase {
 
         redisClient.del(reportName);
 
-        List<String> dimensions = (List<String>) mapDefinition.get("dimensions");
-        List<String> metrics = (List<String>) mapDefinition.get("metrics");
-
+        List<Map<String,String>> dimensions = (List<Map<String,String>>) mapDefinition.get("dimensions");
+        List<Map<String,String>> metrics = (List<Map<String,String>>) mapDefinition.get("metrics");
         processReport(records, dimensions, metrics);
 
         List<Map<String, Object>> report = grouper.getReportList(reportName, dimensions, metrics);
@@ -166,8 +173,8 @@ public class DzupperRedisGrouperTest extends TestBase {
 
         redisClient.del(reportName);
 
-        List<String> dimensions = (List<String>) mapDefinition.get("dimensions");
-        List<String> metrics = (List<String>) mapDefinition.get("metrics");
+        List<Map<String,String>> dimensions = (List<Map<String,String>>) mapDefinition.get("dimensions");
+        List<Map<String,String>> metrics = (List<Map<String,String>>) mapDefinition.get("metrics");
 
         processReport(records, dimensions, metrics);
 

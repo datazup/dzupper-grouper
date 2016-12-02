@@ -28,8 +28,8 @@ public abstract class AbstractGrouper implements IGrouper{
     protected abstract Number handleCountMetric(String reportName, String fieldKey) throws Exception;
 
     @Override
-    public Map<String, Object> upsert(String reportName, DimensionKey dimensionKey, List<String> metrics) {
-        List<Tuple<String,Object>> tupleList = dimensionKey.getDimensionValues();
+    public Map<String, Object> upsert(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
+        List<Tuple<Map<String,String>,Object>> tupleList = dimensionKey.getDimensionValues();
 
         // Map<GroupKey,Map<String,Number>> groupedByDimensionAsKey = new HashMap<>();
 
@@ -37,10 +37,11 @@ public abstract class AbstractGrouper implements IGrouper{
         if (null==report || report.size()==0)
             return null;
 
-        for (String metric: metrics){
-            Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
+        for (Map<String,String> metric: metrics){
+            Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
             // increment field in reportName - hash - in Redis
             String fieldKey = getFieldKey(tupleList);
+            // Map<String,Object> mapDefinition = JsonUtils.getMapFromJson(metricType.getKey());
             Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
 
             if (metricValueObject instanceof NullObject || null==metricValueObject){
@@ -48,21 +49,21 @@ public abstract class AbstractGrouper implements IGrouper{
                 continue;
             }
 
-            fieldKey+=("^"+metric);
+            fieldKey+=("^"+metric.get("name"));
 
             Number result =  null;
 
             try {
                 result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
             } catch (Exception e) {
-                throw new GroupingException("Problem upserting report: "+reportName+" for field: "+fieldKey+" metric: "+metric);
+                throw new GroupingException("Problem upserting report: "+reportName+" for field: "+fieldKey+" metric: "+metric.get("name"));
             }
 
             if (null==result){
                 throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
             }
 
-            report.put(GroupUtils.normalizeKey(metric), result);
+            report.put(GroupUtils.normalizeKey(metric.get("name").toString()), result);
         }
 
         return report;
@@ -100,10 +101,11 @@ public abstract class AbstractGrouper implements IGrouper{
 
 
 
-    private String getFieldKey(List<Tuple<String, Object>> tupleList) {
+    private String getFieldKey(List<Tuple<Map<String,String>, Object>> tupleList) {
         StringBuilder sb = new StringBuilder();
-        for (Tuple<String,Object> t: tupleList){
-            sb.append(t.toString());
+        for (Tuple<Map<String,String>,Object> t: tupleList){
+        	//t.getKey().get("name").toString()+ t.getValue()
+            sb.append(t.getKey().get("name").toString()+ t.getValue());
             sb.append(":");
         }
         return sb.toString();
@@ -112,12 +114,12 @@ public abstract class AbstractGrouper implements IGrouper{
 
 
     @Override
-    public List<Map<String, Object>> getReportList(String reportName, List<String> dimensions, List<String> metrics) {
+    public List<Map<String, Object>> getReportList(String reportName, List<Map<String,String>> dimensions, List<Map<String,String>> metrics) {
         List<Map<String, Object>>  result = getGroupedSimpleReportList(reportName, dimensions, metrics);
         return result;
     }
 
-    private List<Map<String,Object>> getGroupedSimpleReportList(String reportName, List<String> dimensions, List<String> metrics){
+    private List<Map<String,Object>> getGroupedSimpleReportList(String reportName, List<Map<String,String>> dimensions, List<Map<String,String>> metrics){
         try {
 
             List<Map<String,Object>> result = new ArrayList<>();
@@ -132,6 +134,18 @@ public abstract class AbstractGrouper implements IGrouper{
             Set<String> processedDimensions = new HashSet<>();
             Set<String> processedMetrics = new HashSet<>();
 
+            Map<String,Map<String,String>> mapKeyDimensionKeyValue = new HashMap<String,Map<String,String>>();
+            for (Map<String, String> dimKeyVal: dimensions){
+            	String key = dimKeyVal.get("name");
+            	mapKeyDimensionKeyValue.put(key, dimKeyVal);
+            }
+            
+            Map<String,Map<String,String>> mapKeyDimensionKeyValueMetrics = new HashMap<String,Map<String,String>>();
+            for (Map<String, String> dimKeyVal: metrics){
+            	String key = dimKeyVal.get("name");
+            	mapKeyDimensionKeyValueMetrics.put(key, dimKeyVal);
+            }
+            
 
             for (String key: reportMap.keySet()) {
                 String valueStr = reportMap.get(key);
@@ -146,7 +160,7 @@ public abstract class AbstractGrouper implements IGrouper{
                         String metric = splitKey.substring(1);
                         Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
                         String metricKeyName = metricType.getValue().toString()+"("+metricType.getKey()+")";
-                        if (metrics.contains(metricKeyName)) {
+                        if (mapKeyDimensionKeyValueMetrics.containsKey(metricKeyName)) {
                             processedMetrics.add(metricKeyName);
                             metricMap.put(metricType.getValue() + GroupUtils.normalizeKey(metricType.getKey()), metricKeyValueNumber);
                         }
@@ -158,7 +172,7 @@ public abstract class AbstractGrouper implements IGrouper{
                         Object resolvedValue = GroupUtils.resolveValue(fieldValueStr);
 
                         String fieldKeyName = GroupUtils.toFunctionKey(functionKey, fieldName);
-                        if (dimensions.contains(fieldKeyName)){
+                        if (mapKeyDimensionKeyValue.containsKey(fieldKeyName)){
                             processedDimensions.add(fieldKeyName);
                             String normalizedKey = GroupUtils.normalizeKey(fieldKeyName);
                             dimensionMap.put(normalizedKey, resolvedValue);
@@ -168,8 +182,8 @@ public abstract class AbstractGrouper implements IGrouper{
                         String fieldKey = splitKey.substring(0, splitKey.lastIndexOf("$") + 1);
                         String fieldValue = splitKey.substring(splitKey.lastIndexOf("$") + 1);
                         Object resolvedValue = GroupUtils.resolveValue(fieldValue);
-
-                        if (dimensions.contains(fieldKey)) {
+                        
+                        if (mapKeyDimensionKeyValue.containsKey(fieldKey)) {
                             processedDimensions.add(fieldKey);
                             String normalizedKey = GroupUtils.normalizeKey(fieldKey);
                             dimensionMap.put(normalizedKey, resolvedValue);
