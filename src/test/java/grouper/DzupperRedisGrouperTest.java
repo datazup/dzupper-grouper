@@ -53,6 +53,7 @@ public class DzupperRedisGrouperTest extends TestBase {
     }
 
     private void processReport(List<Map<String,Object>> records, List<Map<String,String>> dimensions, List<Map<String,String>> metrics){
+        long start = System.currentTimeMillis();
         for (Map<String,Object> streamMap: records){
             PathExtractor pathExtractor = new PathExtractor(streamMap);
             DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor);
@@ -64,6 +65,7 @@ public class DzupperRedisGrouperTest extends TestBase {
             Assert.assertTrue(currentMap.containsKey("COUNTamount"));
             System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
         }
+        System.out.println("Processed: "+records.size()+" in: "+(System.currentTimeMillis()-start)+" ms with Assert and Serialization");
     }
 
     @Test
@@ -186,7 +188,7 @@ public class DzupperRedisGrouperTest extends TestBase {
         }
         long total = System.currentTimeMillis()-start;
         double avg = total/n;
-        System.out.println("Processed reports size: "+n+" in: "+total+" ms, avg: "+avg+" ms");
+        System.out.println("Processed get full reports size: "+n+" in: "+total+" ms, avg: "+avg+" ms");
 
     }
 

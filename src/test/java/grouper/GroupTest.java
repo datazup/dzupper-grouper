@@ -1,3 +1,4 @@
+/*
 package grouper;
 
 import base.TestBase;
@@ -14,22 +15,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+*/
 /**
  * Created by ninel on 11/25/16.
- */
+ *//*
+
 public class GroupTest extends TestBase {
 
     @Test
     public void groupByProofTestWithJsonDefinition(){
         List<Map<String,Object>> records = getNestedListOfMaps();
 
-        String def = "{"
+        */
+/*String def = "{"
                 +"\"dimensions\":[\"$name$\", \"$type$\"], "
                 +"\"metrics\":[\"SUM($amount$)\", \"COUNT($amount$)\"], "
                 +"\"time\":{"
                 +"\"field\": \"$date$\", "
                 +"\"reportOn\":[\"hour\",\"day\",\"month\"]"
                 +" } "
+                +"}";*//*
+
+
+        String def = "{"
+                +"\"dimensions\":[{\"name\":\"$name$\", \"type\":\"string\"}, {\"name\":\"$type$\", \"type\":\"string\"},"
+                +"{\"name\":\"HOUR($date$)\", \"type\":\"int\"},{\"name\":\"DAY($date$)\", \"type\":\"int\"},{\"name\":\"MONTH($date$)\", \"type\":\"int\"},{\"name\":\"YEAR($date$)\", \"type\":\"int\"}],"
+
+                +"\"metrics\":[{\"name\":\"SUM($amount$)\", \"type\":\"int\"},{\"name\":\"COUNT($amount$)\", \"type\":\"int\"}] "
                 +"}";
 
         Map<String,Object> mapDefinition = JsonUtils.getMapFromJson(def);
@@ -239,3 +251,4 @@ public class GroupTest extends TestBase {
     }
 
 }
+*/
