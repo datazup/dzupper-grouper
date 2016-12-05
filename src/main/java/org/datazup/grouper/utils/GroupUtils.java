@@ -4,6 +4,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.datazup.grouper.MetricType;
 import org.datazup.utils.Tuple;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by ninel on 11/27/16.
  */
@@ -26,7 +29,28 @@ public class GroupUtils {
 
     public static String normalizeKey(String key) {
         String normal = key.replaceAll("\\$","").replaceAll("\\(|\\)", "");
+        if (normal.contains(".")){
+            normal = capitalizeDelimiter(normal, "."); //normal.replaceAll(".","#");
+        }
         return normal;
+    }
+
+    public static String capitalizeDelimiter(String text, String delimiter){
+
+        int pos = 0;
+        boolean capitalize = false;
+        StringBuilder sb = new StringBuilder(text);
+        while (pos < sb.length()) {
+            if (sb.charAt(pos) == '.') {
+                capitalize = true;
+            } else if (capitalize) { // && !Character.isWhitespace(sb.charAt(pos))
+                sb.setCharAt(pos, Character.toUpperCase(sb.charAt(pos)));
+                capitalize = false;
+            }
+            pos++;
+        }
+        String s = sb.toString();
+        return s.replaceAll("\\.", "");
     }
 
     public static Object resolveValue(String fieldValueStr) {
@@ -38,6 +62,16 @@ public class GroupUtils {
             resolvedValue = fieldValueStr;
         }
         return resolvedValue;
+    }
+
+    public static String getFieldKey(List<Tuple<Map<String,String>, Object>> tupleList) {
+        StringBuilder sb = new StringBuilder();
+        for (Tuple<Map<String,String>,Object> t: tupleList){
+            //t.getKey().get("name").toString()+ t.getValue()
+            sb.append(t.getKey().get("name").toString()+ t.getValue());
+            sb.append(":");
+        }
+        return sb.toString();
     }
 
     public static String toFunctionKey(String function, String fieldName) {

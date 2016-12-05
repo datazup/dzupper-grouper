@@ -37,10 +37,14 @@ public abstract class AbstractGrouper implements IGrouper{
         if (null==report || report.size()==0)
             return null;
 
+
         for (Map<String,String> metric: metrics){
             Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
             // increment field in reportName - hash - in Redis
-            String fieldKey = getFieldKey(tupleList);
+
+            String fieldKey = GroupUtils.getFieldKey(tupleList);
+
+
             // Map<String,Object> mapDefinition = JsonUtils.getMapFromJson(metricType.getKey());
             Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
 
@@ -62,6 +66,7 @@ public abstract class AbstractGrouper implements IGrouper{
             if (null==result){
                 throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
             }
+
 
             report.put(GroupUtils.normalizeKey(metric.get("name").toString()), result);
         }
@@ -98,20 +103,6 @@ public abstract class AbstractGrouper implements IGrouper{
         return result;
 
     }
-
-
-
-    private String getFieldKey(List<Tuple<Map<String,String>, Object>> tupleList) {
-        StringBuilder sb = new StringBuilder();
-        for (Tuple<Map<String,String>,Object> t: tupleList){
-        	//t.getKey().get("name").toString()+ t.getValue()
-            sb.append(t.getKey().get("name").toString()+ t.getValue());
-            sb.append(":");
-        }
-        return sb.toString();
-    }
-
-
 
     @Override
     public List<Map<String, Object>> getReportList(String reportName, List<Map<String,String>> dimensions, List<Map<String,String>> metrics) {
