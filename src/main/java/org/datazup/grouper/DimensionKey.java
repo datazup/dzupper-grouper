@@ -4,7 +4,6 @@ import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.exceptions.DimensionKeyException;
 import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.pathextractor.PathExtractorBase;
-import org.datazup.utils.JsonUtils;
 import org.datazup.utils.Tuple;
 
 import java.util.ArrayList;
@@ -48,8 +47,17 @@ public class DimensionKey {
         for (Map<String,String> dimension: dimensions){
             Object value = evaluator.evaluate(dimension.get("name").toString(), pathExtractor);
             if (null!=value) {
-                Tuple<Map<String,String>, Object> tuple = new Tuple<>(dimension, value);
-                tupleList.add(tuple);
+                if (value instanceof List){
+                    List lvalues = (List)value;
+                    for (Object o: lvalues){
+                        Tuple<Map<String,String>, Object> tuple = new Tuple<>(dimension, o);
+                        tupleList.add(tuple);
+                    }
+                }else{
+                    Tuple<Map<String,String>, Object> tuple = new Tuple<>(dimension, value);
+                    tupleList.add(tuple);
+                }
+
             }
         }
     }
