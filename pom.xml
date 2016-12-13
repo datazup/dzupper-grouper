@@ -58,7 +58,7 @@
         </dependency>
 -->
 
-        <dependency>
+       <!-- <dependency>
             <groupId>org.datazup</groupId>
             <artifactId>path-extractor</artifactId>
             <version>1.0</version>
@@ -69,6 +69,12 @@
             <groupId>org.datazup</groupId>
             <artifactId>dzupper-expression</artifactId>
             <version>1.0</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.github.datazup</groupId>
+            <artifactId>dzupper-expression</artifactId>
+            <version>cdcabee097</version>
         </dependency>
 
 
