@@ -59,7 +59,11 @@ public class DzupperRedisGrouperTest extends TestBase {
             DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor);
             dimensionKey.build();
             List<Map<String,Object>> currentMap = grouper.upsert(reportName, dimensionKey, metrics);
-            System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
+
+            for (Map<String,Object> resultMap: currentMap){
+                String fullKey =  dimensionKey.getDimensionFullKeyString(resultMap);
+            }
+            //System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
             /*Assert.assertTrue(currentMap.size()==8);
             Assert.assertTrue(currentMap.containsKey("SUMamount"));
             Assert.assertTrue(currentMap.containsKey("COUNTamount"));
@@ -185,6 +189,7 @@ public class DzupperRedisGrouperTest extends TestBase {
         long start = System.currentTimeMillis();
         for (int i=0;i<n;i++) {
             List<Map<String, Object>> report = grouper.getReportList(reportName, dimensions, metrics);
+            String s= "";
         }
         long total = System.currentTimeMillis()-start;
         double avg = total/n;

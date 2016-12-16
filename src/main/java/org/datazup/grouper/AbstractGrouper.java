@@ -75,51 +75,6 @@ public abstract class AbstractGrouper implements IGrouper{
         return map;
     }
 
-/*
-
-
-    public Map<String, Object> upsertOld(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
-        List<Tuple<Map<String,String>,Object>> tupleList = dimensionKey.getDimensionValues();
-
-<<<<<<< HEAD
-        Set<Tuple<String,Object>> reportList = dimensionKey.getDimensionValuesMap();
-        if (null==reportList || reportList.size()==0)
-            return null;
-=======
-            Object result =  null;
->>>>>>> 6f1d84c4e667b834cfadc6324317b7df701fa7cd
-
-        Map<String,Object> reportMap = new HashMap<>();
-
-            for (Map<String, String> metric : metrics) {
-                Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
-
-                String fieldKey = GroupUtils.getFieldKey(tupleList);
-                Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
-
-                if (metricValueObject instanceof NullObject || null == metricValueObject) {
-                    // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
-                    continue;
-                }
-
-                fieldKey += ("^" + metric.get("name"));
-
-                Number result = null;
-
-                try {
-                    result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
-                } catch (Exception e) {
-                    throw new GroupingException("Problem upserting report: " + reportName + " for field: " + fieldKey + " metric: " + metric.get("name"));
-                }
-
-                if (null == result) {
-                    throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
-                }
-                reportMap.put(GroupUtils.normalizeKey(metric.get("name").toString()), result);
-            }
-        return reportMap;
-    }
-*/
 
     private Object upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
         Object result =  null;

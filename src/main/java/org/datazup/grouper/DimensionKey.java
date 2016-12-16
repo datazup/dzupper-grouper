@@ -1,13 +1,15 @@
 package org.datazup.grouper;
 
 import org.datazup.expression.SelectMapperEvaluator;
-import org.datazup.grouper.exceptions.DimensionKeyException;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.pathextractor.PathExtractorBase;
 import org.datazup.utils.Tuple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ninel on 11/25/16.
@@ -31,10 +33,6 @@ public class DimensionKey {
         this.dimensions = dimensions;
     }
 
-   /* public Map<String, Object> getStreamMap() {
-        return pathExtractor.getDataObject();
-    }*/
-
     public void build() {
         tupleList= new ArrayList<>();
         for (Map<String,String> dimension: dimensions){
@@ -44,9 +42,6 @@ public class DimensionKey {
                     tupleList.add(tuple);
             }
         }
-    }
-    public List<Tuple<Map<String,String>,Object>> getDimensionValues(){
-        return tupleList;
     }
 
     public List<List<Tuple<Map<String,String>,Object>>> getTupleListDimensions(){
@@ -113,11 +108,17 @@ public class DimensionKey {
             }
             return arrayList;
         }else {
-            return list;
+            List<Tuple<Map<String,String>,Object>> tmp = new ArrayList<>();
+            for (List<Tuple<Map<String,String>,Object>> tuples: list){
+                tmp.addAll(tuples);
+            }
+            List<List<Tuple<Map<String,String>,Object>>> tmpList = new ArrayList<>();
+            tmpList.add(tmp);
+            return tmpList;
         }
     }
 
-    public Set<Tuple<String, Object>> getDimensionValuesMap(){
+   /* public Set<Tuple<String, Object>> getDimensionValuesMap(){
         Set<Tuple<String, Object>> list = new HashSet<>();
 
         if (null==tupleList){
@@ -141,9 +142,22 @@ public class DimensionKey {
             }
         }
         return list;
-    }
+    }*/
 
     public Object evaluate(String expression){
         return evaluator.evaluate(expression, pathExtractor);
+    }
+
+    public String getDimensionFullKeyString(Map<String, Object> resultMap) {
+        StringBuilder sb = new StringBuilder();
+        for (Map<String, String> dim: dimensions){
+            String key = dim.get("name");
+            String normalized = GroupUtils.normalizeKey(key);
+            if (resultMap.containsKey(normalized)){
+                Object o = resultMap.get(normalized);
+                sb.append(key).append(":").append(o).append(":");
+            }
+        }
+        return sb.toString();
     }
 }
