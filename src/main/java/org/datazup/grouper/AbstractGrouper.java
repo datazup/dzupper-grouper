@@ -81,7 +81,7 @@ public abstract class AbstractGrouper implements IGrouper{
         if (metricType.equals(MetricType.COUNT)){
             result = handleCountMetric(reportName, fieldKey);
         }
-        if (metricType.equals(MetricType.LAST)){
+        else if (metricType.equals(MetricType.LAST)){
         	result = handleLastMetric(reportName, fieldKey, (String)metricValueObject);
         }
         else {
