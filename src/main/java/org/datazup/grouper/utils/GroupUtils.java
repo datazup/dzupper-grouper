@@ -64,11 +64,27 @@ public class GroupUtils {
         return resolvedValue;
     }
 
+    public static String getFieldKey(Map<String,Object>  reportKey, Object reportValue){
+        StringBuilder sb = new StringBuilder();
+
+        return sb.toString();
+    }
+
     public static String getFieldKey(List<Tuple<Map<String,String>, Object>> tupleList) {
         StringBuilder sb = new StringBuilder();
         for (Tuple<Map<String,String>,Object> t: tupleList){
             //t.getKey().get("name").toString()+ t.getValue()
             sb.append(t.getKey().get("name").toString()+ t.getValue());
+            sb.append(":");
+        }
+        return sb.toString();
+    }
+
+    public static String getNormalizedFieldKey(List<Tuple<Map<String,String>, Object>> tupleList) {
+        StringBuilder sb = new StringBuilder();
+        for (Tuple<Map<String,String>,Object> t: tupleList){
+            String normalized = normalizeKey(t.getKey().get("name").toString());
+            sb.append(normalized+ t.getValue());
             sb.append(":");
         }
         return sb.toString();

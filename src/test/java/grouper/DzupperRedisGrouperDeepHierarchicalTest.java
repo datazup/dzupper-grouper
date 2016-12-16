@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ModuleConfiguration.class)
-public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
+public class DzupperRedisGrouperDeepHierarchicalTest extends TestBase {
 
     @Autowired
     IGrouper grouper;
@@ -30,7 +30,7 @@ public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
     @Autowired
     RedisClient redisClient;
 
-    String reportName = "Reporthieararchical_company:custom:Reporthieararchical";
+    String reportName = "ReportDeepHieararchical_company:custom:ReportDeepHieararchical";
 
     private Map<String,Object> getReportDefinition(){
 

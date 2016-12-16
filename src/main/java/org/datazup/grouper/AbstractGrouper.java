@@ -28,51 +28,92 @@ public abstract class AbstractGrouper implements IGrouper{
     protected abstract Number handleCountMetric(String reportName, String fieldKey) throws Exception;
 
     @Override
-    public Map<String, Object> upsert(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
-        List<Tuple<Map<String,String>,Object>> tupleList = dimensionKey.getDimensionValues();
+    public List<Map<String, Object>> upsert(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
+        List<List<Tuple<Map<String,String>,Object>>> r = dimensionKey.getTupleListDimensions();
 
-        // Map<GroupKey,Map<String,Number>> groupedByDimensionAsKey = new HashMap<>();
+        List<Map<String, Object>> resultMap = new ArrayList<>();
+        for (List<Tuple<Map<String,String>,Object>> tuples: r){
+            Map<String, Object> reportMap = getDimensionReportMap(tuples); //new HashMap<>();
+            for (Map<String, String> metric : metrics) {
+                Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
+                String fieldKey = GroupUtils.getFieldKey(tuples);
 
-        Map<String,Object> report = dimensionKey.getDimensionValuesMap();
-        if (null==report || report.size()==0)
-            return null;
+                Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
 
-
-        for (Map<String,String> metric: metrics){
-            Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
-            // increment field in reportName - hash - in Redis
-
-            String fieldKey = GroupUtils.getFieldKey(tupleList);
-
-
-            // Map<String,Object> mapDefinition = JsonUtils.getMapFromJson(metricType.getKey());
-            Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
-
-            if (metricValueObject instanceof NullObject || null==metricValueObject){
-                // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
-                continue;
+                if (metricValueObject instanceof NullObject || null == metricValueObject) {
+                    // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
+                    continue;
+                }
+                fieldKey += ("^" + metric.get("name"));
+                Number result = null;
+                try {
+                    result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
+                } catch (Exception e) {
+                    throw new GroupingException("Problem upserting report: " + reportName + " for field: " + fieldKey + " metric: " + metric.get("name"));
+                }
+                if (null == result) {
+                    throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
+                }
+                reportMap.put(GroupUtils.normalizeKey(metric.get("name").toString()), result);
             }
-
-            fieldKey+=("^"+metric.get("name"));
-
-            Number result =  null;
-
-            try {
-                result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
-            } catch (Exception e) {
-                throw new GroupingException("Problem upserting report: "+reportName+" for field: "+fieldKey+" metric: "+metric.get("name"));
-            }
-
-            if (null==result){
-                throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
-            }
-
-
-            report.put(GroupUtils.normalizeKey(metric.get("name").toString()), result);
+            resultMap.add(reportMap);
         }
 
-        return report;
+        return  resultMap;
     }
+
+    private Map<String, Object> getDimensionReportMap(List<Tuple<Map<String, String>, Object>> tuples) {
+        Map<String, Object> map = new HashMap<>();
+
+        for (Tuple<Map<String, String>, Object> tuple: tuples){
+            String key = GroupUtils.normalizeKey(tuple.getKey().get("name"));
+            map.put(key, tuple.getValue());
+        }
+
+        return map;
+    }
+
+/*
+
+
+    public Map<String, Object> upsertOld(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
+        List<Tuple<Map<String,String>,Object>> tupleList = dimensionKey.getDimensionValues();
+
+        Set<Tuple<String,Object>> reportList = dimensionKey.getDimensionValuesMap();
+        if (null==reportList || reportList.size()==0)
+            return null;
+
+        Map<String,Object> reportMap = new HashMap<>();
+
+            for (Map<String, String> metric : metrics) {
+                Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
+
+                String fieldKey = GroupUtils.getFieldKey(tupleList);
+                Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
+
+                if (metricValueObject instanceof NullObject || null == metricValueObject) {
+                    // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
+                    continue;
+                }
+
+                fieldKey += ("^" + metric.get("name"));
+
+                Number result = null;
+
+                try {
+                    result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
+                } catch (Exception e) {
+                    throw new GroupingException("Problem upserting report: " + reportName + " for field: " + fieldKey + " metric: " + metric.get("name"));
+                }
+
+                if (null == result) {
+                    throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
+                }
+                reportMap.put(GroupUtils.normalizeKey(metric.get("name").toString()), result);
+            }
+        return reportMap;
+    }
+*/
 
     private Number upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
         Number result =  null;

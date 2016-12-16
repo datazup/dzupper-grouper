@@ -39,22 +39,30 @@ public abstract class TestBase {
             o.put("type", "type"+(i%2));
             o.put("amount",2*(10-i));
 
-            List<Map<String,Object>> list2 = new ArrayList<>();
-
-            for (int j = 0;j<10;j++) {
-                Map<String, Object> r = new HashMap<>();
-                r.put("price1", 10 * j);
-                r.put("name1", "item" + (j % 2));
-                r.put("type1", "type" + (j % 2));
-                r.put("amount1", 2 * (10 - j));
-
-                list2.add(r);
-            }
+            List<Map<String,Object>> list2 = getChildList(10, 2, 10);
             o.put("child", list2);
+            list2 = getChildList(15, 3, 15);
+            o.put("child1", list2);
+            list2 = getChildList(25, 3, 5);
+            o.put("child2", list2);
 
             list1.add(o);
         }
         return list1;
+    }
+
+    List<Map<String,Object>> getChildList(int count, int modulo, int cons){
+        List<Map<String,Object>> list2 = new ArrayList<>();
+        for (int j = 0;j<count;j++) {
+            Map<String, Object> r = new HashMap<>();
+            r.put("price1", cons * j);
+            r.put("name1", (j%(modulo+1)==2)? "item" + (j % modulo): null);
+            r.put("type1", (j%(modulo+2)==2)? "type" + (j % modulo): null);
+            r.put("amount1", modulo * (cons - j));
+
+            list2.add(r);
+        }
+        return list2;
     }
 
 
