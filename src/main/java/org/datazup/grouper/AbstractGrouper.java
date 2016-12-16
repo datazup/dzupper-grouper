@@ -22,6 +22,8 @@ public abstract class AbstractGrouper implements IGrouper{
     protected abstract Number handleAvgMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
 
     protected abstract Number handleSumMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
+    
+    protected abstract Number handleLastMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
 
     protected abstract Map<String,String> getRawReport(String reportName) throws Exception;
 
@@ -95,6 +97,9 @@ public abstract class AbstractGrouper implements IGrouper{
                     break;
                 case MIN:
                     result = handleMinMetric(reportName, fieldKey, metricValue);
+                    break;
+                case LAST:
+                    result = handleLastMetric(reportName, fieldKey, metricValue);
                     break;
                 default:
                     throw new NotValidMetric("Invalid metric: " + metricType);
