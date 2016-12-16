@@ -82,7 +82,7 @@ public abstract class AbstractGrouper implements IGrouper{
             result = handleCountMetric(reportName, fieldKey);
         }
         else if (metricType.equals(MetricType.LAST)){
-        	result = handleLastMetric(reportName, fieldKey, (String)metricValueObject);
+        	result = handleLastMetric(reportName, fieldKey, metricValueObject.toString());
         }
         else {
             if (!(metricValueObject instanceof Number)){
