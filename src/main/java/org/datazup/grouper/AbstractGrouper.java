@@ -22,6 +22,8 @@ public abstract class AbstractGrouper implements IGrouper{
     protected abstract Number handleAvgMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
 
     protected abstract Number handleSumMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
+    
+    protected abstract Object handleLastMetric(String reportName, String fieldKey, String metricValue)  throws Exception;
 
     protected abstract Map<String,String> getRawReport(String reportName) throws Exception;
 
@@ -45,7 +47,7 @@ public abstract class AbstractGrouper implements IGrouper{
                     continue;
                 }
                 fieldKey += ("^" + metric.get("name"));
-                Number result = null;
+                Object result = null;
                 try {
                     result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
                 } catch (Exception e) {
@@ -79,9 +81,13 @@ public abstract class AbstractGrouper implements IGrouper{
     public Map<String, Object> upsertOld(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
         List<Tuple<Map<String,String>,Object>> tupleList = dimensionKey.getDimensionValues();
 
+<<<<<<< HEAD
         Set<Tuple<String,Object>> reportList = dimensionKey.getDimensionValuesMap();
         if (null==reportList || reportList.size()==0)
             return null;
+=======
+            Object result =  null;
+>>>>>>> 6f1d84c4e667b834cfadc6324317b7df701fa7cd
 
         Map<String,Object> reportMap = new HashMap<>();
 
@@ -115,11 +121,15 @@ public abstract class AbstractGrouper implements IGrouper{
     }
 */
 
-    private Number upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
-        Number result =  null;
+    private Object upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
+        Object result =  null;
         if (metricType.equals(MetricType.COUNT)){
             result = handleCountMetric(reportName, fieldKey);
-        }else {
+        }
+        else if (metricType.equals(MetricType.LAST)){
+        	result = handleLastMetric(reportName, fieldKey, metricValueObject.toString());
+        }
+        else {
             if (!(metricValueObject instanceof Number)){
                 throw new NotValidMetric("Invalid metric value: "+metricValueObject+" for metric: "+metricType);
             }

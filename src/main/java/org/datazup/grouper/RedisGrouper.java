@@ -70,6 +70,11 @@ public class RedisGrouper extends AbstractGrouper{
         Double d = redisClient.incrementHashFieldByFloatValue(reportName, fieldKey, metricValue.doubleValue());
         return d;
     }
+    
+    public Object handleLastMetric(String reportName, String fieldKey, String metricValue) throws Exception {
+    	Object d = redisClient.addToHash(reportName, fieldKey, metricValue);
+        return d;
+    }
 
 
 }
