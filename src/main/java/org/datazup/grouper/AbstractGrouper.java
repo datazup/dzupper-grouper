@@ -23,7 +23,7 @@ public abstract class AbstractGrouper implements IGrouper{
 
     protected abstract Number handleSumMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
     
-    protected abstract Number handleLastMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
+    protected abstract Object handleLastMetric(String reportName, String fieldKey, String metricValue)  throws Exception;
 
     protected abstract Map<String,String> getRawReport(String reportName) throws Exception;
 
@@ -57,7 +57,7 @@ public abstract class AbstractGrouper implements IGrouper{
 
             fieldKey+=("^"+metric.get("name"));
 
-            Number result =  null;
+            Object result =  null;
 
             try {
                 result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
@@ -76,11 +76,15 @@ public abstract class AbstractGrouper implements IGrouper{
         return report;
     }
 
-    private Number upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
-        Number result =  null;
+    private Object upsert(String reportName, String fieldKey, MetricType metricType, Object metricValueObject) throws Exception {
+        Object result =  null;
         if (metricType.equals(MetricType.COUNT)){
             result = handleCountMetric(reportName, fieldKey);
-        }else {
+        }
+        if (metricType.equals(MetricType.LAST)){
+        	result = handleLastMetric(reportName, fieldKey, (String)metricValueObject);
+        }
+        else {
             if (!(metricValueObject instanceof Number)){
                 throw new NotValidMetric("Invalid metric value: "+metricValueObject+" for metric: "+metricType);
             }
@@ -97,9 +101,6 @@ public abstract class AbstractGrouper implements IGrouper{
                     break;
                 case MIN:
                     result = handleMinMetric(reportName, fieldKey, metricValue);
-                    break;
-                case LAST:
-                    result = handleLastMetric(reportName, fieldKey, metricValue);
                     break;
                 default:
                     throw new NotValidMetric("Invalid metric: " + metricType);

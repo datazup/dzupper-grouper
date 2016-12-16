@@ -71,8 +71,8 @@ public class RedisGrouper extends AbstractGrouper{
         return d;
     }
     
-    public Number handleLastMetric(String reportName, String fieldKey, Number metricValue) throws Exception {
-    	Long d = redisClient.addToHash(reportName, fieldKey, metricValue.toString());
+    public Object handleLastMetric(String reportName, String fieldKey, String metricValue) throws Exception {
+    	Object d = redisClient.addToHash(reportName, fieldKey, metricValue);
         return d;
     }
 
