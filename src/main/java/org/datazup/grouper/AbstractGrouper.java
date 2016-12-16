@@ -23,7 +23,7 @@ public abstract class AbstractGrouper implements IGrouper{
 
     protected abstract Number handleSumMetric(String reportName, String fieldKey, Number metricValue)  throws Exception;
     
-    protected abstract Object handleLastMetric(String reportName, String fieldKey, String metricValue)  throws Exception;
+    protected abstract Object handleLastMetric(String reportName, String fieldKey, Object metricValue)  throws Exception;
 
     protected abstract Map<String,String> getRawReport(String reportName) throws Exception;
 
@@ -82,7 +82,7 @@ public abstract class AbstractGrouper implements IGrouper{
             result = handleCountMetric(reportName, fieldKey);
         }
         else if (metricType.equals(MetricType.LAST)){
-        	result = handleLastMetric(reportName, fieldKey, metricValueObject.toString());
+        	result = handleLastMetric(reportName, fieldKey, metricValueObject);
         }
         else {
             if (!(metricValueObject instanceof Number)){
