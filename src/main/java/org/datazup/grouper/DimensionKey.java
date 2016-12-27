@@ -36,7 +36,11 @@ public class DimensionKey {
     public void build() {
         tupleList= new ArrayList<>();
         for (Map<String,String> dimension: dimensions){
-            Object value = evaluator.evaluate(dimension.get("name").toString(), pathExtractor);
+        	String func = dimension.get("name");
+        	if(dimension.containsKey("func")){
+        		func = dimension.get("func");
+        	}
+            Object value = evaluator.evaluate(func, pathExtractor);
             if (null!=value) {
                     Tuple<Map<String,String>, Object> tuple = new Tuple<>(dimension, value);
                     tupleList.add(tuple);
