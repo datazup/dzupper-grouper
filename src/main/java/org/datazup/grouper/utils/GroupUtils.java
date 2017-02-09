@@ -73,8 +73,12 @@ public class GroupUtils {
     public static String getFieldKey(List<Tuple<Map<String,String>, Object>> tupleList) {
         StringBuilder sb = new StringBuilder();
         for (Tuple<Map<String,String>,Object> t: tupleList){
-            //t.getKey().get("name").toString()+ t.getValue()
-            sb.append(t.getKey().get("name").toString()+ t.getValue());
+            
+        	String name = t.getKey().get("name").toString();
+        	if(!name.contains("$")){
+        		name =name+"*";
+        	}
+            sb.append(name+ t.getValue());
             sb.append(":");
         }
         return sb.toString();

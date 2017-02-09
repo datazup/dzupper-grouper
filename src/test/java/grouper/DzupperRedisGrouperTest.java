@@ -35,12 +35,12 @@ public class DzupperRedisGrouperTest extends TestBase {
     String reportName = "Company:custom:Report1";
 
     private Map<String,Object> getReportDefinition(){
-    	
-    	 String newDef = "{"
+    		 
+      	 String newDef = "{"
                  +"\"dimensions\":[{\"name\":\"$name$\", \"type\":\"string\"}, {\"name\":\"$type$\", \"type\":\"string\"},"
-    			 +"{\"name\":\"HOUR($date$)\", \"type\":\"int\"},{\"name\":\"DAY($date$)\", \"type\":\"int\"},{\"name\":\"MONTH($date$)\", \"type\":\"int\"},{\"name\":\"YEAR($date$)\", \"type\":\"int\"}],"
+    			 +"{\"name\":\"Hour_Date\",\"func\":\"HOUR($date$)\", \"type\":\"int\"},{\"name\":\"DAY($date$)\", \"type\":\"int\"},{\"name\":\"MONTH($date$)\", \"type\":\"int\"},{\"name\":\"YEAR($date$)\", \"type\":\"int\"}],"
                 
-                 +"\"metrics\":[{\"name\":\"SUM($amount$)\", \"type\":\"int\"},{\"name\":\"COUNT($amount$)\", \"type\":\"int\"}] "
+                 +"\"metrics\":[{ \"name\":\"Sum_Amount\",\"func\":\"SUM($amount$)\", \"type\":\"int\"},{\"name\":\"COUNT($amount$)\", \"type\":\"int\"}] "
                  +"}";
     	 
 //        String def = "{"

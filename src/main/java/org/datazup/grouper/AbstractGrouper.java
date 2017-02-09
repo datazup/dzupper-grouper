@@ -37,7 +37,12 @@ public abstract class AbstractGrouper implements IGrouper{
         for (List<Tuple<Map<String,String>,Object>> tuples: r){
             Map<String, Object> reportMap = getDimensionReportMap(tuples); //new HashMap<>();
             for (Map<String, String> metric : metrics) {
-                Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric.get("name").toString());
+            	String func = metric.get("name");
+            	if(metric.containsKey("func")){
+            		func = metric.get("func");
+            	}
+            	
+                Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(func.toString());
                 String fieldKey = GroupUtils.getFieldKey(tuples);
 
                 Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
@@ -129,7 +134,6 @@ public abstract class AbstractGrouper implements IGrouper{
             Map<String,Number> metricMap = new HashMap<>();
 
             Set<String> processedDimensions = new HashSet<>();
-            Set<String> processedMetrics = new HashSet<>();
 
             Map<String,Map<String,String>> mapKeyDimensionKeyValue = new HashMap<String,Map<String,String>>();
             for (Map<String, String> dimKeyVal: dimensions){
@@ -143,6 +147,8 @@ public abstract class AbstractGrouper implements IGrouper{
             	mapKeyDimensionKeyValueMetrics.put(key, dimKeyVal);
             }
             
+            Map<String, Tuple<String, MetricType>> nest = null;
+            
 
             for (String key: reportMap.keySet()) {
                 String valueStr = reportMap.get(key);
@@ -155,36 +161,67 @@ public abstract class AbstractGrouper implements IGrouper{
                 for (String splitKey: splitted){
                     if (splitKey.contains("^")){ // check metrics
                         String metric = splitKey.substring(1);
-                        Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
-                        String metricKeyName = metricType.getValue().toString()+"("+metricType.getKey()+")";
-                        if (mapKeyDimensionKeyValueMetrics.containsKey(metricKeyName)) {
-                            processedMetrics.add(metricKeyName);
-                            metricMap.put(metricType.getValue() + GroupUtils.normalizeKey(metricType.getKey()), metricKeyValueNumber);
+                        if(mapKeyDimensionKeyValueMetrics.containsKey(metric)){
+                        	String metricKeyName = "";
+                        	if((mapKeyDimensionKeyValueMetrics.get(metric)).containsKey("func")){
+                        		metricKeyName = metric;
+                        		metric = (mapKeyDimensionKeyValueMetrics.get(metric)).get("func");
+                        	}
+                        	
+                        	Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(metric);
+                            
+                            metricKeyName = metricKeyName == "" ? metricType.getValue() + GroupUtils.normalizeKey(metricType.getKey()) :metricKeyName;
+                            metricMap.put(metricKeyName, metricKeyValueNumber);
                         }
-                    }else if (splitKey.contains("(")){
-                        String functionKey =   splitKey.substring(0, splitKey.indexOf("("));
-                        String fieldName = splitKey.substring(splitKey.indexOf("$")+1,splitKey.lastIndexOf("$"));
-
-                        String fieldValueStr = splitKey.substring(splitKey.lastIndexOf(")")+1);
-                        Object resolvedValue = GroupUtils.resolveValue(fieldValueStr);
-
-                        String fieldKeyName = GroupUtils.toFunctionKey(functionKey, fieldName);
-                        if (mapKeyDimensionKeyValue.containsKey(fieldKeyName)){
-                            processedDimensions.add(fieldKeyName);
-                            String normalizedKey = GroupUtils.normalizeKey(fieldKeyName);
-                            dimensionMap.put(normalizedKey, resolvedValue);
-                        }
-
-                    }else {
-                        String fieldKey = splitKey.substring(0, splitKey.lastIndexOf("$") + 1);
-                        String fieldValue = splitKey.substring(splitKey.lastIndexOf("$") + 1);
-                        Object resolvedValue = GroupUtils.resolveValue(fieldValue);
                         
-                        if (mapKeyDimensionKeyValue.containsKey(fieldKey)) {
-                            processedDimensions.add(fieldKey);
-                            String normalizedKey = GroupUtils.normalizeKey(fieldKey);
-                            dimensionMap.put(normalizedKey, resolvedValue);
-                        }
+                    }
+                    else{
+                    	String fieldKeyName  ="";
+                    	Object resolvedValue = null;
+                    	if(splitKey.contains("*")){
+                    		String functionKey =   splitKey.substring(0, splitKey.indexOf("*"));
+
+                            String fieldValueStr = splitKey.substring(splitKey.lastIndexOf("*")+1);
+                            resolvedValue = GroupUtils.resolveValue(fieldValueStr);
+                            
+                            if(mapKeyDimensionKeyValue.containsKey(functionKey)){
+                            	if((mapKeyDimensionKeyValue.get(functionKey)).containsKey("func")){
+                            		splitKey = (mapKeyDimensionKeyValue.get(functionKey)).get("func");
+                            		fieldKeyName = functionKey;
+                            	}
+                            }
+                    	}
+                    		
+                    	if (splitKey.contains("(")){
+                            String functionKey =   splitKey.substring(0, splitKey.indexOf("("));
+                            String fieldName = splitKey.substring(splitKey.indexOf("$")+1,splitKey.lastIndexOf("$"));
+
+                            if(resolvedValue == null){
+                            	String fieldValueStr = splitKey.substring(splitKey.lastIndexOf(")")+1);
+                                resolvedValue = GroupUtils.resolveValue(fieldValueStr);
+                            }
+
+                            fieldKeyName = fieldKeyName == "" ? GroupUtils.toFunctionKey(functionKey, fieldName) : fieldKeyName;
+                            if (mapKeyDimensionKeyValue.containsKey(fieldKeyName)){
+                                processedDimensions.add(fieldKeyName);
+                                String normalizedKey = GroupUtils.normalizeKey(fieldKeyName);
+                                dimensionMap.put(normalizedKey, resolvedValue);
+                            }
+                    	}
+                    	else{
+                    		fieldKeyName =  fieldKeyName == "" ? splitKey.substring(0, splitKey.lastIndexOf("$") + 1) : fieldKeyName;
+                    		
+                    		if(resolvedValue == null){
+                    			String fieldValue = splitKey.substring(splitKey.lastIndexOf("$") + 1);
+                                resolvedValue = GroupUtils.resolveValue(fieldValue);
+                    		}
+                            
+                            if (mapKeyDimensionKeyValue.containsKey(fieldKeyName)) {
+                                processedDimensions.add(fieldKeyName);
+                                String normalizedKey = GroupUtils.normalizeKey(fieldKeyName);
+                                dimensionMap.put(normalizedKey, resolvedValue);
+                            }
+                    	}
                     }
                 }
 
