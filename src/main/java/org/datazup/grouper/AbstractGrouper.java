@@ -56,7 +56,7 @@ public abstract class AbstractGrouper implements IGrouper{
                 try {
                     result = upsert(reportName, fieldKey, metricType.getValue(), metricValueObject);
                 } catch (Exception e) {
-                    throw new GroupingException("Problem upserting report: " + reportName + " for field: " + fieldKey + " metric: " + metric.get("name"), e);
+                    throw new GroupingException("Problem upserting report: " + reportName + " for field: " + fieldKey + " metric: " + metric.get("name")+" metricValue: "+metricValueObject, e);
                 }
                 if (null == result) {
                     throw new NotValidMetric("Invalid metric upserted result - it shouldn't be null");
