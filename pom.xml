@@ -44,37 +44,11 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>com.github.datazup</groupId>
-            <artifactId>path-extractor</artifactId>
-            <version>master</version>
-        </dependency>
-
 
         <dependency>
             <groupId>com.github.datazup</groupId>
             <artifactId>dzupper-expression</artifactId>
-            <version>master-d25e0c5496-1</version>
-        </dependency>
--->
-
-       <!-- <dependency>
-            <groupId>org.datazup</groupId>
-            <artifactId>path-extractor</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.datazup</groupId>
-            <artifactId>dzupper-expression</artifactId>
-            <version>1.0</version>
-        </dependency>-->
-
-        <dependency>
-            <groupId>com.github.datazup</groupId>
-            <artifactId>dzupper-expression</artifactId>
-            <version>e431b66673</version>
+            <version>15f46be785</version>
         </dependency>
 
 
@@ -113,21 +87,20 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
-            <!--<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>${start-class}</mainClass>
-                    <layout>ZIP</layout>
-                </configuration>
+
+            <plugin>  <!-- Create sources.jar -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
+
         </plugins>
     </build>
 
