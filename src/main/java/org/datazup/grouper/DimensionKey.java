@@ -1,6 +1,6 @@
 package org.datazup.grouper;
 
-import org.datazup.expression.SelectMapperEvaluator;
+import org.datazup.expression.AbstractEvaluator;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.pathextractor.PathExtractorBase;
@@ -19,10 +19,13 @@ public class DimensionKey {
     private PathExtractorBase pathExtractor;
     private List<Tuple<Map<String,String>,Object>> tupleList;
 
-    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance();
-    public DimensionKey(List<Map<String,String>> dimensions, PathExtractorBase pathExtractor) {
+    private AbstractEvaluator<Object> evaluator;
+
+    //static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance();
+    public DimensionKey(List<Map<String,String>> dimensions, PathExtractorBase pathExtractor, AbstractEvaluator<Object> evaluator) {
         this.dimensions = dimensions;
         this.pathExtractor = pathExtractor;
+        this.evaluator = evaluator;
     }
 
     public List<Map<String,String>> getDimensions() {

@@ -2,6 +2,7 @@ package grouper;
 
 import base.TestBase;
 import org.datazup.ModuleConfiguration;
+import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
@@ -32,6 +33,8 @@ public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
 
     String reportName = "Reporthieararchical_company:custom:Reporthieararchical";
 
+    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance();
+
     private Map<String,Object> getReportDefinition(){
 
         String newDef = "{"
@@ -48,7 +51,7 @@ public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
         long start = System.currentTimeMillis();
         for (Map<String,Object> streamMap: records){
             PathExtractor pathExtractor = new PathExtractor(streamMap);
-            DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor);
+            DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor, evaluator);
             dimensionKey.build();
             List<Map<String,Object>> currentMap = grouper.upsert(reportName, dimensionKey, metrics);
             System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
