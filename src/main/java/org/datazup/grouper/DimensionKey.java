@@ -51,14 +51,14 @@ public class DimensionKey {
         }
     }
 
-    public List<List<Tuple<Map<String,String>,Object>>> getTupleListDimensions(){
+    public List<List<Tuple<Map<String,String>,Object>>> getTupleListDimensions(List<Tuple<Map<String,String>,Object>> tlist){
         List<List<Tuple<Map<String,String>,Object>>> list = new ArrayList<>();
         List<List<Tuple<Map<String,String>,Object>>> arrayList = new ArrayList<>();
 
         Map<String, List<Tuple<Map<String,String>,Object>>> arrMap = new HashMap<>(); //- key as Field Name = value as lis of items - we shold have "nulls" in the items so that we can match by the index of the list
 
-        boolean hasList = false;
-        for (Tuple<Map<String,String>, Object> tuple: tupleList){
+       // boolean hasList = false;
+        for (Tuple<Map<String,String>, Object> tuple: tlist){
 
             Object tupleValue = tuple.getValue();
             if (null!=tupleValue) {
@@ -66,7 +66,7 @@ public class DimensionKey {
                 if (tupleValue instanceof List){
                     //if (hasList) throw new GroupingException("There could be only one dimension with List result. Please check dimensions");
 
-                    hasList = true;
+          //          hasList = true;
                     List l = (List)tupleValue;
                     List<Tuple<Map<String,String>,Object>> setList = new ArrayList<>();
                     for (Object o: l){
@@ -87,6 +87,7 @@ public class DimensionKey {
 
             }
         }
+
         if (arrMap.size()>0){
 
             Map<Integer, List<Tuple<Map<String,String>,Object>>> positionMap = new HashMap<>();
@@ -123,6 +124,10 @@ public class DimensionKey {
             tmpList.add(tmp);
             return tmpList;
         }
+    }
+
+    public List<List<Tuple<Map<String,String>,Object>>> getTupleListDimensions(){
+        return getTupleListDimensions(tupleList);
     }
 
    /* public Set<Tuple<String, Object>> getDimensionValuesMap(){

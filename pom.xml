@@ -48,7 +48,7 @@
         <dependency>
             <groupId>com.github.datazup</groupId>
             <artifactId>dzupper-expression</artifactId>
-            <version>1d51c021e7</version>
+            <version>579a192374</version>
         </dependency>
 
 
