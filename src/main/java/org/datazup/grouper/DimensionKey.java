@@ -114,8 +114,12 @@ public class DimensionKey {
                 }
                 arrayList.add(listTuples);
             }
+            //return arrayList;
+        }
+
+        if (arrayList.size()>0){
             return arrayList;
-        }else {
+        } else {
             List<Tuple<Map<String,String>,Object>> tmp = new ArrayList<>();
             for (List<Tuple<Map<String,String>,Object>> tuples: list){
                 tmp.addAll(tuples);

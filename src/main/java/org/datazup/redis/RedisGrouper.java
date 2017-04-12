@@ -1,7 +1,7 @@
-package org.datazup.grouper;
+package org.datazup.redis;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.datazup.redis.RedisClient;
+import org.datazup.grouper.AbstractGrouper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by ninel on 11/25/16.
  */
 @Component
-public class RedisGrouper extends AbstractGrouper{
+public class RedisGrouper extends AbstractGrouper {
 
     @Autowired
     RedisClient redisClient;

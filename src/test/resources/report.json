@@ -1,4 +1,6 @@
 {
-  "dimensions": [],
-  "metrics": []
+  "dimensions": [{"name":"TTT", "type":"VARCHAR", "func":"$first.second[].child.prop1$"}],
+  "metrics": [
+    {"name":"Count Created", "type":"FLOAT",  "func":"COUNT($first.second[].child.prop1$)"}
+  ]
 }
