@@ -50,6 +50,9 @@
         </constructor-arg>
         <constructor-arg index="1" value="${redis.host}" type="java.lang.String" />
         <constructor-arg index="2" value="${redis.port}" type="int"  />
+        <constructor-arg index="3" value="${redis.timeout}" type="int"  />
+        <constructor-arg index="4" value="${redis.password}" type="java.lang.String"  />
+
     </bean>
 
     <bean id="redisClient" class="org.datazup.redis.RedisClient" scope="prototype"
