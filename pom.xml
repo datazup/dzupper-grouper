@@ -7,7 +7,7 @@
 
     <groupId>org.datazup</groupId>
     <artifactId>dzupper-grouper</artifactId>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
 
 
     <repositories>
@@ -46,9 +46,9 @@
 
 
         <dependency>
-            <groupId>com.github.datazup</groupId>
+            <groupId>org.datazup</groupId>
             <artifactId>dzupper-expression</artifactId>
-            <version>0b8fec7fd5</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
 
