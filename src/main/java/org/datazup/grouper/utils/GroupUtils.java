@@ -18,8 +18,12 @@ public class GroupUtils {
         String metricField = null;
 
         metricName = metric.substring(0, metric.indexOf("("));
-        metricField = metric.substring(metric.indexOf("$")+1);
-        metricField = metricField.substring(0, metricField.indexOf("$"));
+        if (metric.contains("$")) {
+            metricField = metric.substring(metric.indexOf("$") + 1);
+            metricField = metricField.substring(0, metricField.indexOf("$"));
+        }else{
+            metricField = metric.substring(metric.indexOf("(")+1, metric.indexOf(")"));
+        }
 
         metricField = "$"+metricField+"$";
 
