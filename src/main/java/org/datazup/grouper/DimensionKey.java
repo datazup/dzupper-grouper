@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by ninel on 11/25/16.
+ * Created by admin@datazup on 11/25/16.
  */
 public class DimensionKey {
     private List<Map<String,String>> dimensions = null;

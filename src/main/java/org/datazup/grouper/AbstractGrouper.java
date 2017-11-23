@@ -10,7 +10,7 @@ import org.datazup.utils.Tuple;
 import java.util.*;
 
 /**
- * Created by ninel on 11/30/16.
+ * Created by admin@datazup on 11/30/16.
  */
 public abstract class AbstractGrouper implements IGrouper{
 

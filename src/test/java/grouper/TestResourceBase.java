@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
- * Created by ninel on 3/29/17.
+ * Created by admin@datazup on 3/29/17.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ModuleConfiguration.class)

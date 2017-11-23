@@ -4,7 +4,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
- * Created by ninel on 11/25/16.
+ * Created by admin@datazup on 11/25/16.
  */
 public class GenericObjectPoolConfigWrapper implements FactoryBean<GenericObjectPoolConfig> {
 

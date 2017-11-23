@@ -1,7 +1,7 @@
 package org.datazup.grouper.exceptions;
 
 /**
- * Created by ninel on 11/26/16.
+ * Created by admin@datazup on 11/26/16.
  */
 public class GroupingException extends RuntimeException {
     public GroupingException(String message){ super(message);}
