@@ -1,11 +1,14 @@
+/*
 package org.datazup.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+*/
 /**
  * Created by ninel on 11/26/16.
- */
+ *//*
+
 public class MetricMapperEvaluator extends SimpleObjectEvaluator {
     private static final Logger LOG = LoggerFactory.getLogger(MetricMapperEvaluator.class);
 
@@ -27,3 +30,4 @@ public class MetricMapperEvaluator extends SimpleObjectEvaluator {
     }
 
 }
+*/

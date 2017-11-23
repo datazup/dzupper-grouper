@@ -6,7 +6,7 @@ import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
-import org.datazup.pathextractor.SimpleMapListResolver;
+import org.datazup.pathextractor.SimpleResolverHelper;
 import org.datazup.redis.RedisClient;
 import org.datazup.utils.JsonUtils;
 import org.junit.Test;
@@ -34,7 +34,8 @@ public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
 
     String reportName = "Reporthieararchical_company:custom:Reporthieararchical";
 
-    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance();
+    static SimpleResolverHelper mapListResolver = new SimpleResolverHelper();
+    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance(mapListResolver);
 
     private Map<String,Object> getReportDefinition(){
 
@@ -51,7 +52,7 @@ public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
     private void processReport(List<Map<String,Object>> records, List<Map<String,String>> dimensions, List<Map<String,String>> metrics){
         long start = System.currentTimeMillis();
         for (Map<String,Object> streamMap: records){
-            PathExtractor pathExtractor = new PathExtractor(streamMap, new SimpleMapListResolver());
+            PathExtractor pathExtractor = new PathExtractor(streamMap, new SimpleResolverHelper());
             DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor, evaluator);
             dimensionKey.build();
             List<Map<String,Object>> currentMap = grouper.upsert(reportName, dimensionKey, metrics);

@@ -4,7 +4,7 @@ import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
-import org.datazup.pathextractor.SimpleMapListResolver;
+import org.datazup.pathextractor.SimpleResolverHelper;
 import org.datazup.utils.JsonUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +20,9 @@ import java.util.Map;
 
 public class GroupMultiLevelSourcesExpressionReportsTest extends TestResourceBase {
 
-    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance();
+    static SimpleResolverHelper mapListResolver = new SimpleResolverHelper();
+
+    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance(mapListResolver);
 
     private Map<String, Object> data;
 
@@ -46,7 +48,7 @@ public class GroupMultiLevelSourcesExpressionReportsTest extends TestResourceBas
         Assert.assertNotNull(dimensions);
         Assert.assertNotNull(metrics);
 
-        PathExtractor pathExtractor = new PathExtractor(data, new SimpleMapListResolver());
+        PathExtractor pathExtractor = new PathExtractor(data, new SimpleResolverHelper());
         DimensionKey dimensionKey = new DimensionKey(dimensions, pathExtractor, evaluator);
         dimensionKey.build();
         List<Map<String,Object>> currentMap = grouper.upsert("some:report:name", dimensionKey, metrics);
