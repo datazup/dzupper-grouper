@@ -7,16 +7,7 @@
 
     <groupId>org.datazup</groupId>
     <artifactId>dzupper-grouper</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
+    <version>1.0</version>
 
     <!-- Inherit defaults from Spring Boot -->
     <parent>
@@ -48,10 +39,8 @@
         <dependency>
             <groupId>org.datazup</groupId>
             <artifactId>dzupper-expression</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
-
-
 
         <dependency>
             <groupId>redis.clients</groupId>
