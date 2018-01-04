@@ -48,13 +48,26 @@ public class RedisClient  implements Serializable {
         }
     }
 
-    public void set(String key, int ttl, String data) throws Exception {
+    public void set(String key, String data) throws Exception {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            jedis.set(key, data);
+        } catch (Exception e) {
+            jedis.close();
+            throw new Exception("Error in cache set for key: " + key + " and data: " + data, e);
+        } finally {
+            jedis.close();
+        }
+
+    }
+
+    public void setex(String key, int ttl, String data) throws Exception {
         Jedis jedis = jedisPool.getResource();
         try {
             jedis.setex(key, ttl, data);
         } catch (Exception e) {
             jedis.close();
-            throw new Exception("Error in cache set for key: " + key + " and data: " + data, e);
+            throw new Exception("Error in cache setex for key: " + key + " and data: " + data, e);
         } finally {
             jedis.close();
         }
