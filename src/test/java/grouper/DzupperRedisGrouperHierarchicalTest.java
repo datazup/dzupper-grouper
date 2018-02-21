@@ -2,6 +2,8 @@ package grouper;
 
 import base.TestBase;
 import org.datazup.ModuleConfiguration;
+import org.datazup.exceptions.EvaluatorException;
+import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
@@ -49,7 +51,7 @@ public class DzupperRedisGrouperHierarchicalTest  extends TestBase {
         return mapDefinition;
     }
 
-    private void processReport(List<Map<String,Object>> records, List<Map<String,String>> dimensions, List<Map<String,String>> metrics){
+    private void processReport(List<Map<String,Object>> records, List<Map<String,String>> dimensions, List<Map<String,String>> metrics) throws EvaluatorException, GrouperException {
         long start = System.currentTimeMillis();
         for (Map<String,Object> streamMap: records){
             PathExtractor pathExtractor = new PathExtractor(streamMap, new SimpleResolverHelper());

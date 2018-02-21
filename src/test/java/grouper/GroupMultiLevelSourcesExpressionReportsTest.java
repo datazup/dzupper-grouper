@@ -1,5 +1,7 @@
 package grouper;
 
+import org.datazup.exceptions.EvaluatorException;
+import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.SelectMapperEvaluator;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
@@ -40,7 +42,7 @@ public class GroupMultiLevelSourcesExpressionReportsTest extends TestResourceBas
     }
 
     @Test
-    public void simpleTest(){
+    public void simpleTest() throws EvaluatorException, GrouperException {
         Map<String,Object> report = loadMapFromResoure("classpath:/report.json");
         List<Map<String,String>> dimensions = (List<Map<String, String>>) report.get("dimensions");
         List<Map<String,String>> metrics = (List<Map<String,String>>) report.get("metrics");

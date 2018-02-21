@@ -1,5 +1,6 @@
 package org.datazup.grouper;
 
+import org.datazup.exceptions.EvaluatorException;
 import org.datazup.expression.AbstractEvaluator;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.utils.GroupUtils;
@@ -36,7 +37,7 @@ public class DimensionKey {
         this.dimensions = dimensions;
     }
 
-    public void build() {
+    public void build() throws EvaluatorException {
         tupleList= new ArrayList<>();
         for (Map<String,String> dimension: dimensions){
         	String func = dimension.get("name");
@@ -160,7 +161,7 @@ public class DimensionKey {
         return list;
     }*/
 
-    public Object evaluate(String expression){
+    public Object evaluate(String expression) throws EvaluatorException {
         return evaluator.evaluate(expression, pathExtractor);
     }
 

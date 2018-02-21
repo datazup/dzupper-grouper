@@ -1,10 +1,13 @@
 package org.datazup.grouper;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.datazup.exceptions.EvaluatorException;
+import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.NullObject;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.exceptions.NotValidMetric;
 import org.datazup.grouper.utils.GroupUtils;
+import org.datazup.utils.JsonUtils;
 import org.datazup.utils.Tuple;
 
 import java.util.*;
@@ -30,7 +33,7 @@ public abstract class AbstractGrouper implements IGrouper{
     protected abstract Number handleCountMetric(String reportName, String fieldKey) throws Exception;
 
     @Override
-    public List<Map<String, Object>> upsert(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) {
+    public List<Map<String, Object>> upsert(String reportName, DimensionKey dimensionKey, List<Map<String,String>> metrics) throws GrouperException {
         List<List<Tuple<Map<String,String>,Object>>> r = dimensionKey.getTupleListDimensions();
 
         List<Map<String, Object>> resultMap = new ArrayList<>();
@@ -45,7 +48,12 @@ public abstract class AbstractGrouper implements IGrouper{
                 Tuple<String, MetricType> metricType = GroupUtils.parseMetricType(func.toString());
                 String fieldKey = GroupUtils.getFieldKey(tuples);
 
-                Object metricValueObject = dimensionKey.evaluate(metricType.getKey());
+                Object metricValueObject = null;
+                try {
+                    metricValueObject = dimensionKey.evaluate(metricType.getKey());
+                } catch (EvaluatorException e) {
+                    throw new GrouperException("Evaluation exception for metric: "+ JsonUtils.getJsonFromObject(metric), e);
+                }
 
                 if (metricValueObject instanceof NullObject || null == metricValueObject) {
                     // TODO: metricValueObject is sometimes NullObject - what we should do? - do we need to remove and not to count or to count NullObjects as well
