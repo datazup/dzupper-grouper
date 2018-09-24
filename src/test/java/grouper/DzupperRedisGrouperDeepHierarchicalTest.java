@@ -1,7 +1,7 @@
 package grouper;
 
 import base.TestBase;
-import org.datazup.ModuleConfiguration;
+import base.ModuleConfiguration;
 import org.datazup.exceptions.EvaluatorException;
 import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.SelectMapperEvaluator;
@@ -9,7 +9,7 @@ import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
 import org.datazup.pathextractor.SimpleResolverHelper;
-import org.datazup.redis.RedisClient;
+import redis.RedisClient;
 import org.datazup.utils.JsonUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;

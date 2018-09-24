@@ -1,6 +1,6 @@
 package grouper;
 
-import org.datazup.ModuleConfiguration;
+import base.ModuleConfiguration;
 import org.datazup.utils.JsonUtils;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.datazup.redis;
+package redis;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.datazup.grouper.AbstractGrouper;

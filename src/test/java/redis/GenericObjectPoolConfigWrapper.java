@@ -1,4 +1,4 @@
-package org.datazup.redis;
+package redis;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.FactoryBean;

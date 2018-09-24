@@ -1,4 +1,4 @@
-package org.datazup.redis;
+package redis;
 
 import org.datazup.utils.JsonUtils;
 import org.slf4j.Logger;

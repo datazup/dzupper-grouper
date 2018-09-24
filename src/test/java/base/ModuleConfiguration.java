@@ -1,4 +1,4 @@
-package org.datazup;
+package base;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
@@ -6,9 +6,8 @@ import org.springframework.context.annotation.ImportResource;
 /**
  * Created by admin@datazup on 11/28/16.
  */
-//@Configuration()
-//@ComponentScan(basePackages = "org.datazup")
-@SpringBootApplication(scanBasePackages = "org.datazup")
-@ImportResource("classpath:context/redis-context.xml")
+
+@SpringBootApplication(scanBasePackages = {"org.datazup", "redis"})
+@ImportResource("classpath:**/context/redis-context.xml")
 public class ModuleConfiguration {
 }

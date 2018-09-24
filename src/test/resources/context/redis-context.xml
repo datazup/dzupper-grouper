@@ -5,7 +5,7 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 
-    <bean id="configWrapper" scope="prototype" class="org.datazup.redis.GenericObjectPoolConfigWrapper">
+    <bean id="configWrapper" scope="prototype" class="redis.GenericObjectPoolConfigWrapper">
         <!-- Action to take when trying to acquire a connection and all connections
             are taken -->
         <!-- <property name="whenExhaustedAction">
@@ -55,7 +55,7 @@
 
     </bean>
 
-    <bean id="redisClient" class="org.datazup.redis.RedisClient" scope="prototype"
+    <bean id="redisClient" class="redis.RedisClient" scope="prototype"
           destroy-method="destroy">
         <constructor-arg ref="redisConnectionPool" />
     </bean>
