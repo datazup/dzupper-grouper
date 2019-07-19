@@ -7,10 +7,7 @@ import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.pathextractor.PathExtractorBase;
 import org.datazup.utils.Tuple;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by admin@datazup on 11/25/16.
@@ -56,7 +53,7 @@ public class DimensionKey {
         List<List<Tuple<Map<String,String>,Object>>> list = new ArrayList<>();
         List<List<Tuple<Map<String,String>,Object>>> arrayList = new ArrayList<>();
 
-        Map<String, List<Tuple<Map<String,String>,Object>>> arrMap = new HashMap<>(); //- key as Field Name = value as lis of items - we shold have "nulls" in the items so that we can match by the index of the list
+        Map<String, List<Tuple<Map<String,String>,Object>>> arrMap = new LinkedHashMap<>(); //- key as Field Name = value as lis of items - we shold have "nulls" in the items so that we can match by the index of the list
 
        // boolean hasList = false;
         for (Tuple<Map<String,String>, Object> tuple: tlist){
@@ -91,7 +88,7 @@ public class DimensionKey {
 
         if (arrMap.size()>0){
 
-            Map<Integer, List<Tuple<Map<String,String>,Object>>> positionMap = new HashMap<>();
+            Map<Integer, List<Tuple<Map<String,String>,Object>>> positionMap = new LinkedHashMap<>();
 
             for (String arrMapKeyField: arrMap.keySet()){
                 List<Tuple<Map<String,String>, Object>> tupleValues = arrMap.get(arrMapKeyField);
