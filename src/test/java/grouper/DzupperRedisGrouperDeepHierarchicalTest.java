@@ -1,7 +1,7 @@
 package grouper;
 
-import base.TestBase;
 import base.ModuleConfiguration;
+import base.TestBase;
 import org.datazup.exceptions.EvaluatorException;
 import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.SelectMapperEvaluator;
@@ -9,13 +9,13 @@ import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
 import org.datazup.pathextractor.SimpleResolverHelper;
-import redis.RedisClient;
 import org.datazup.utils.JsonUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import redis.RedisClient;
 
 import java.util.List;
 import java.util.Map;
