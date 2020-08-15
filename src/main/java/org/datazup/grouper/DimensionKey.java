@@ -2,6 +2,7 @@ package org.datazup.grouper;
 
 import org.datazup.exceptions.EvaluatorException;
 import org.datazup.expression.AbstractEvaluator;
+import org.datazup.expression.context.ContextWrapper;
 import org.datazup.grouper.exceptions.GroupingException;
 import org.datazup.grouper.utils.GroupUtils;
 import org.datazup.pathextractor.PathExtractorBase;
@@ -20,10 +21,10 @@ public class DimensionKey {
     private PathExtractorBase pathExtractor;
     private List<Tuple<Map<String,String>,Object>> tupleList;
 
-    private AbstractEvaluator<Object> evaluator;
+    private AbstractEvaluator evaluator;
 
     //static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance();
-    public DimensionKey(List<Map<String,String>> dimensions, PathExtractorBase pathExtractor, AbstractEvaluator<Object> evaluator) {
+    public DimensionKey(List<Map<String,String>> dimensions, PathExtractorBase pathExtractor, AbstractEvaluator evaluator) {
         this.dimensions = dimensions;
         this.pathExtractor = pathExtractor;
         this.evaluator = evaluator;
@@ -44,7 +45,8 @@ public class DimensionKey {
         	if(dimension.containsKey("func")){
         		func = dimension.get("func");
         	}
-            Object value = evaluator.evaluate(func, pathExtractor);
+            ContextWrapper valueContext = evaluator.evaluate(func, pathExtractor);
+        	Object value = valueContext.get();
             if (null!=value) {
                     Tuple<Map<String,String>, Object> tuple = new Tuple<>(dimension, value);
                     tupleList.add(tuple);
@@ -162,7 +164,8 @@ public class DimensionKey {
     }*/
 
     public Object evaluate(String expression) throws EvaluatorException {
-        return evaluator.evaluate(expression, pathExtractor);
+        ContextWrapper res = evaluator.evaluate(expression, pathExtractor);
+        return res.get();
     }
 
     public String getDimensionFullKeyString(Map<String, Object> resultMap) {

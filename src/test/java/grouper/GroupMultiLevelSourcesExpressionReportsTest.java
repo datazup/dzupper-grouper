@@ -3,6 +3,7 @@ package grouper;
 import org.datazup.exceptions.EvaluatorException;
 import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.SelectMapperEvaluator;
+import org.datazup.expression.context.ConcurrentExecutionContext;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
@@ -23,8 +24,9 @@ import java.util.Map;
 public class GroupMultiLevelSourcesExpressionReportsTest extends TestResourceBase {
 
     static SimpleResolverHelper mapListResolver = new SimpleResolverHelper();
+    static ConcurrentExecutionContext executionContext = new ConcurrentExecutionContext();
 
-    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance(mapListResolver);
+    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance(executionContext, mapListResolver);
 
     private Map<String, Object> data;
 

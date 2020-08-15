@@ -5,6 +5,7 @@ import base.TestBase;
 import org.datazup.exceptions.EvaluatorException;
 import org.datazup.exceptions.GrouperException;
 import org.datazup.expression.SelectMapperEvaluator;
+import org.datazup.expression.context.ConcurrentExecutionContext;
 import org.datazup.grouper.DimensionKey;
 import org.datazup.grouper.IGrouper;
 import org.datazup.pathextractor.PathExtractor;
@@ -37,7 +38,8 @@ public class DzupperRedisGrouperDeepHierarchicalTest extends TestBase {
     String reportName = "ReportDeepHieararchical_company:custom:ReportDeepHieararchical";
 
     static SimpleResolverHelper mapListResolver = new SimpleResolverHelper();
-    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance(mapListResolver);
+    static ConcurrentExecutionContext executionContext = new ConcurrentExecutionContext();
+    static SelectMapperEvaluator evaluator = SelectMapperEvaluator.getInstance(executionContext, mapListResolver);
 
     private Map<String,Object> getReportDefinition(){
 
