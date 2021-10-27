@@ -25,9 +25,9 @@ Sample:
         String groupName = "group1";
         
         for (Map<String,Object> streamMap: records){
-             DimensionKey dimensionKey = new DimensionKey(dimensions, streamMap);
-             dimensionKey.build();
-             Map<String,Object> currentMap = grouper.upsert(groupName, dimensionKey, metrics);
+             DimensionKey asyncDimensionKey = new DimensionKey(dimensions, streamMap);
+             asyncDimensionKey.build();
+             Map<String,Object> currentMap = grouper.upsert(groupName, asyncDimensionKey, metrics);
              System.out.println("CurrentMap: "+ JsonUtils.getJsonFromObject(currentMap));
         }
         
